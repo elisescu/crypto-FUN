@@ -58,16 +58,15 @@ int crypto_shutdown( ) {
         return EXIT_SUCCESS;
     }
     
-    /*
+    /* reclaim the key */
     printf("[+] freeing key...\n");
-    free(key);
+    gcry_free(key);
     key = NULL;
-    */
 
+    /* tell gcrypt to zerioise and disable secure memory */
     printf("[+] zeroising secure memory...\n");
     gcry_control(GCRYCTL_TERM_SECMEM); 
     gcry_control(GCRYCTL_DISABLE_SECMEM);
-    free(key);
 
     return EXIT_SUCCESS;
 }
@@ -96,13 +95,45 @@ int crypto_genkey( ) {
     fflush(stdout);
     /* generate key in secure memory */
     key = (char *) gcry_random_bytes_secure(KEYSIZE * sizeof(char), 
-                                            GCRY_STRONG_RANDOM);
+                                            GCRY_VERY_STRONG_RANDOM);
     if (NULL == key) {
-        printf("\ncould not generate key!\n");
+        printf("\t\t\t\tFAILED!\n");
         return EXIT_FAILURE;
     }
 
     printf("\t\t\t\tOK!\n");
+    return EXIT_SUCCESS;
+}
+
+int crypto_loadkey( ) {
+    /* determine if a keyfile is present */
+    if (-1 == access( KEYFILE, R_OK )) {
+        if (! crypto_genkey() ) {
+            return EXIT_FAILURE;
+        }
+    } else {
+        /* allocate secure memory for key */
+        char *key   = gcry_calloc_secure(KEYSIZE, sizeof(char));
+        if (NULL == key) {
+            printf("error allocating secure memory for key!\n");
+            return EXIT_FAILURE;
+        }
+
+        /* open key file */
+        FILE *kd    = fopen( KEYFILE, O_RDONLY );
+        if (KEYSIZE < fread( key, sizeof(char), KEYSIZE, kd )) {
+            printf("key size mismatch, generating new key...\n");
+            if (! crypto_genkey() ) {
+                return EXIT_FAILURE;
+            }
+        }
+        if (fclose(kd)) {
+            printf("error release key file!\n");
+            return EXIT_FAILURE;
+        }
+
+    }
+
     return EXIT_SUCCESS;
 }
 

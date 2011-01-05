@@ -8,6 +8,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <gcrypt.h>
 
@@ -17,9 +20,11 @@
 #define     GCRYPT_NO_MPI_MACROS        1
 #define     GCRYPT_NO_DEPRECATED        1
 
-#define     SECMEM_SZ                   32768
+#define     SECMEM_SZ                   65536
 #define     KEYSIZE                     32
 #define     ALGO                        GCRY_CIPHER_AES256
+
+#define     KEYFILE                     "aes.key"
 
 
 /*
