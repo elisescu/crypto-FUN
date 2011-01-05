@@ -10,17 +10,21 @@
 
 char *key;
 
-int main( ) {
+int main(int argc, char *argv[]) {
     if (crypto_init()) {
         return EXIT_FAILURE;
     }
 
-    if (crypto_genkey()) {
-        return EXIT_FAILURE;
+    printf("[+] looking for key file...\n");
+    if (crypto_loadkey()) {
+        printf("couldn't load or generate key!\n");
     }
 
     return crypto_shutdown();
 }
+
+
+
 
 
 int crypto_init( ) {
@@ -53,6 +57,10 @@ int crypto_init( ) {
     return EXIT_SUCCESS;
 }
 
+
+
+
+
 int crypto_shutdown( ) {
     if (! gcry_control(GCRYCTL_ANY_INITIALIZATION_P)) {
         return EXIT_SUCCESS;
@@ -71,17 +79,6 @@ int crypto_shutdown( ) {
     return EXIT_SUCCESS;
 }
 
-
-int crypto_encrypt_file( FILE *inf, FILE *outf ) {
-    if (!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
-        printf("crypto library has not been initialised!\n");
-        return EXIT_FAILURE;
-    }
-
-
-    return EXIT_SUCCESS;
-
-}
 
 
 int crypto_genkey( ) {
@@ -105,13 +102,23 @@ int crypto_genkey( ) {
     return EXIT_SUCCESS;
 }
 
+
+
+
 int crypto_loadkey( ) {
     /* determine if a keyfile is present */
     if (-1 == access( KEYFILE, R_OK )) {
+        printf("[+] key file not found (%s not present), generating key...\n",
+               KEYFILE);
+        /* if no keyfile, generate a new key */
         if (! crypto_genkey() ) {
             return EXIT_FAILURE;
         }
-    } else {
+        else {
+            return EXIT_SUCCESS;
+        }
+    } 
+    else {
         /* allocate secure memory for key */
         char *key   = gcry_calloc_secure(KEYSIZE, sizeof(char));
         if (NULL == key) {
@@ -120,13 +127,22 @@ int crypto_loadkey( ) {
         }
 
         /* open key file */
-        FILE *kd    = fopen( KEYFILE, O_RDONLY );
+        FILE *kd    = fopen( KEYFILE, "r" );
+
+        if (ferror()) {
+            printf("error opening file!\n");
+            return EXIT_FAILURE;
+        }
+
+        /* attempt to read the appropriate number of bytes into the key */
         if (KEYSIZE < fread( key, sizeof(char), KEYSIZE, kd )) {
             printf("key size mismatch, generating new key...\n");
             if (! crypto_genkey() ) {
                 return EXIT_FAILURE;
             }
         }
+        printf("[+] read %d bytes into key...\n", KEYSIZE);
+
         if (fclose(kd)) {
             printf("error release key file!\n");
             return EXIT_FAILURE;
@@ -136,4 +152,18 @@ int crypto_loadkey( ) {
 
     return EXIT_SUCCESS;
 }
+
+
+
+int crypto_encrypt_file( FILE *inf, FILE *outf ) {
+    if (!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
+        printf("crypto library has not been initialised!\n");
+        return EXIT_FAILURE;
+    }
+
+
+    return EXIT_SUCCESS;
+
+}
+
 

@@ -35,6 +35,7 @@ int crypto_init( void );                            /* initialise crypto */
 int cryto_shutdown( void );                         /* zeroise secure memory 
                                                        and clean up */
 int crypto_genkey( void );                          /* generate a key */
+int crypto_loadkey( void );                         /* load key from file */
 int crypto_encrypt_file( FILE *inf, FILE *outf );   /* encrypt inf and output
                                                      * as outf. */
 
