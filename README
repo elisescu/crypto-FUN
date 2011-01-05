@@ -2,3 +2,8 @@ crypto_fun
 ==========
 
 Personal playground / sandbox to play with some crypto libs.
+
+dirs:
+    gcrypt: libgcrypt phun
+    ssl: ssl phun
+
