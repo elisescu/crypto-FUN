@@ -6,6 +6,9 @@
  */
 
 
+#ifndef __SECURE_INIT_H
+#define __SECURE_INIT_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -32,10 +35,11 @@
  */
 
 int crypto_init( void );                            /* initialise crypto */
-int cryto_shutdown( void );                         /* zeroise secure memory 
+int cryto_shutdown( char *key );                    /* zeroise secure memory 
                                                        and clean up */
-int crypto_genkey( void );                          /* generate a key */
-int crypto_loadkey( void );                         /* load key from file */
-int crypto_encrypt_file( FILE *inf, FILE *outf );   /* encrypt inf and output
+int crypto_genkey( char *key );                     /* generate a key */
+int crypto_loadkey( char *key );                    /* load key from file */
+int crypto_encrypt_file( FILE *inf, FILE *outf, char *key );   
+                                                    /* encrypt inf and output
                                                      * as outf. */
-
+#endif
