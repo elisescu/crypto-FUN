@@ -65,3 +65,12 @@ int crypto_dumpkey( const char *keyfile, struct crypto_t *keydata );
  */
 int crypto_destroykeyfile( const char *keyfile, size_t passes = 1 );
 
+/*
+ * crypto_zerokey: zeroise the key
+ *      arguments: a struct crypto_t storing the key to be wiped
+ *      returns: zero on success, non-zero on failure
+ */
+int crypto_zerokey( struct crypto_t *keyinfo );
+
+
+
