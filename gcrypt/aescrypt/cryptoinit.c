@@ -165,6 +165,9 @@ int crypto_loadkeyfile( const char *keyfile, struct crypto_t *keydata ) {
 
         /* TODO: close before dumping */
         else {
+            if ( fclose(kp) ) {
+                #ifdef DEBUG
+                fprintf(stderr, "[!] error closing key file!\n");
             crypto_dumpkey(keyfile, keydata);
             return EXIT_SUCCESS;
         }

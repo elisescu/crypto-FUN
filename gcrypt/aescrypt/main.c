@@ -19,10 +19,15 @@
 
 int main(int argc, char **argv) {
     enum crypto_op op;
-    struct *crypto_t aes;           /* stores algorith / key info */
-    char *keyfile   = NULL;         /* file contain key */
-    char *infile    = NULL;         /* input file */
-    char *outfile   = NULL;         /* output file */
+    struct crypto_t*  aes;          /* stores algorith / key info   */
+    struct crypto_t** keyring;
+                                    /* stores list of crypto_t's, 
+                                       NULL terminated              */
+    char *keyfile   = NULL;         /* file contain key             */
+    char *infile    = NULL;         /* input file                   */
+    char *outfile   = NULL;         /* output file                  */
+
+    /* set up keyring */
 
     /* allocate memory for crypto struct */
     aes = (struct crypto_t *) calloc(1, sizeof(struct crypto_t));
@@ -80,15 +85,11 @@ int main(int argc, char **argv) {
 
 
     if (crypto_init()) {
+        printf("[!] could not initalise gcrypt!\n");
         return EXIT_FAILURE;
     }
 
-    printf("[+] looking for key file...\n");
-    if (crypto_loadkey()) {
-        printf("couldn't load or generate key!\n");
-    }
-
-    return crypto_shutdown();
+    return crypto_shutdown( keyring );
 }
 
 

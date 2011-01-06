@@ -39,7 +39,7 @@ int crypto_shutdown( struct crypto_t **keyring);
  *      arguments: a crypto_t struct with information about the key
  *      returns: zero on success, non-zero on failure
  */
-int crypto_genkey( struct crypto_t *keydata );
+int crypto_genkey( struct crypto_t **keyring, size_t key_index );
 
 /*
  * crypto_loadkeyfile: load a key from a file
@@ -63,7 +63,7 @@ int crypto_dumpkey( const char *keyfile, struct crypto_t *keydata );
  *                 the number of passes to overwrite the file with
  *      returns: zero on success, non-zero on failure
  */
-int crypto_destroykeyfile( const char *keyfile, size_t passes = 1 );
+int crypto_destroykeyfile( const char *keyfile, size_t passes );
 
 /*
  * crypto_zerokey: zeroise the key
