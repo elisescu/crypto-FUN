@@ -111,4 +111,70 @@ int crypto_genkey( struct crypto_t *keydata ) {
     return EXIT_SUCCESS;
 }
 
+/* TODO: clean up this section to remove code duplication */
 int crypto_loadkeyfile( const char *keyfile, struct crypto_t *keydata ) {
+    #ifdef DEBUG
+    printf("[+] attempting to load key from file %s...\n", keyfile);
+    #endif
+
+    /* if a NULL filename was passed in, the correct behaviour is to
+     * die, as the user has no way of storing the key */
+    if (NULL == keyfile) {
+        #ifdef DEBUG
+        fprintf(stderr, "[!] invalid keyfile specified!\n");
+        #endif
+
+        return EXIT_FAILURE;
+    }
+
+    size_t read_sz = 0;
+    FILE *kp = fopen(keyfile, "r");
+
+    /* make sure the file was opened before trying to read from it */
+    if (ferror(kp)) {
+        #ifdef DEBUG
+        fprintf(stderr, "[!] could not load key from %s!\n", keyfile);
+        perror("fopen");
+        #endif
+
+        return EXIT_FAILURE;
+    }
+
+    /* use MAX_KEY_SIZE + 1 to detect a key size greater than the 
+     * maximum allowed... */
+    read_sz = fread(keydata->key, sizeof(char), MAX_KEY_SIZE + 1, kp);
+    
+    /* make sure we read enough bytes from the file */
+    if (! keydata->keysize == read_sz ) {
+
+        #ifdef DEBUG
+        fprintf(stderr, "[!] wrong size key for cipher!\n");
+        fprintf(stderr, "\t(expected %u, read %u bytes)\n",
+                keydata->keysize, read_sz);
+        #endif
+
+        /* if we failed to read the key, generate a new key */
+        if (crypto_genkey(keydata)) {
+            #ifdef DEBUG
+            fprintf(stderr, "[!] fatal error getting a key!\n");
+            #endif
+
+            /* this is a non-recoverable error, so we exit */
+            exit(2);
+        }
+
+        else {
+            crypto_dumpkey(keyfile, keydata);
+            return EXIT_SUCCESS;
+        }
+    }
+
+    else {
+        #ifdef DEBUG
+        printf("[+] key successfully loaded!");
+        #endif
+
+        return EXIT_SUCCESS;
+    }
+}
+

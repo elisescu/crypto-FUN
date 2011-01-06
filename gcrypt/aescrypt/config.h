@@ -22,3 +22,8 @@
 /* for development, pull in debug messages */
 #define         DEBUG                   1
 
+/* defines the maximum key length that can be used - this should only
+ * be altered if you specifically want to limit key sizes or you choose
+ * an algorithm other than AES. */
+#define         MAX_KEY_LENGTH          32
+
