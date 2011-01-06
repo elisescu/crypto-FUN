@@ -1,6 +1,6 @@
 CC=gcc
 LIBS="-lgcrypt"
-PROGNAME="fc"
+PROGNAME="aescrypt"
 
 CFLAGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
               -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
@@ -21,6 +21,6 @@ main.o: main.c
 	$(CC) -c -o main.o main.c
 
 clean:	
-	rm -rf *.o a.out 
+	rm -rf *.o a.out $(PROGNAME)
 
 .PHONY:	all clean

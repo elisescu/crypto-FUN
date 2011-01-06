@@ -1,0 +1,16 @@
+aescrypt
+Kyle Isom <coder@kyleisom.net>
+20100106
+
+this is a quick encryption / decryption program to learn how to use libgcrypt.
+
+usage:
+	aescrypt
+		-in 		input file
+		-out		output file
+		-e		encrypt
+		-d		decrypt
+		-b		key size in bits (128, 192, or 256 bits)
+		-k		specify a key file
+
+encrypts a file with the AES symmetric algorith.
