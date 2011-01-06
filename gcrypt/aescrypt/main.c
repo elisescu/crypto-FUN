@@ -5,14 +5,15 @@
  * test code for crypto utils.
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "secure_init.h"
+#include "cryptinit.h"
 #include "cryptfile.h"
 
-char *key;
 
 int main(int argc, char *argv[]) {
+    char *key;
     if (crypto_init()) {
         return EXIT_FAILURE;
     }

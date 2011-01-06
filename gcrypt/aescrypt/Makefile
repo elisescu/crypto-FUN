@@ -8,11 +8,11 @@ CFLAGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
               -Wconversion -Wstrict-prototypes
 
 
-all: secure_init.o cryptfile.o main.o
+all: cryptinit.o cryptfile.o main.o
 	$(CC) $(LIBS) -o $(PROGNAME) secure_init.o cryptfile.o main.o
 
-secure_init.o: secure_init.c
-	$(CC) -c -o secure_init.o secure_init.c
+cryptinit.o: cryptinit.c
+	$(CC) -c -o cryptinit.o cryptinit.c
 
 cryptfile.o: cryptfile.c
 	$(CC) -c -o cryptfile.o cryptfile.c
