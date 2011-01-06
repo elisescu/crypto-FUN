@@ -13,7 +13,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#include "cryptinit.h"
+#include "cryptoinit.h"
 #include "cryptfile.h"
 
 

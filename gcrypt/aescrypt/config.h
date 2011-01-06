@@ -12,3 +12,6 @@
 #define		GCRYPT_NO_MPI_MACROS	1
 #define		GRYPT_NO_DEPRECATED	1
 
+/* for development, pull in debug messages */
+#define         DEBUG                   1
+
