@@ -16,6 +16,7 @@ struct crypto_t {
     size_t keysize;
     char *key;
     gcry_cipher_spec_t algo;
+    unsigned short int securemem;
 };
 
 enum crypto_op {
