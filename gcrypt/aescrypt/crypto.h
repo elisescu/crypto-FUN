@@ -18,4 +18,9 @@ struct crypto_t {
     gcry_cipher_spec_t algo;
 };
 
+enum crypto_op {
+    ENCRYPT,
+    DECRYPT
+};
+
 #endif

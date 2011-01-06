@@ -18,7 +18,7 @@
 
 
 int main(int argc, char **argv) {
-    char *key;
+    enum crypto_op op;
     struct *crypto_t aes;           /* stores algorith / key info */
     char *keyfile   = NULL;         /* file contain key */
     char *infile    = NULL;         /* input file */
@@ -34,9 +34,50 @@ int main(int argc, char **argv) {
     /* parse  command line options */
     opterr  = 0;
     while ((c = getopt(argc, argv, "i:o:edb:k:")) != -1) {
-        case 'i':
-            
+        switch (c) {
+            case 'i':
+                infile  = optarg;
+                break;
+            case 'o':
+                outfile = optarg;
+                break;
+            case 'e':
+                op = ENCRYPT;
+                break;
+            case 'd':
+                op = DECRYPT;
+                break;
+            case 'b':
+                aes.keysize = (size_t) strtol(optarg, NULL, 0);
+                aes.keysize /= 8;
+                break;
+            case 'k':
+                keyfile = optarg;
+                break;
+            case 'h':
+                usage();
+                break;
+            default:
+                break;
+        }
     }
+    
+    /* select cipher based on key size */
+    if (32 == aes.keysize) {
+        aes.algo = GCRYPT_CIPHER_AES256;
+    }
+    else if (24 == aes.keysize) {
+        aes.algo = GCRYPT_CIPHER_AES192;
+    }
+    else if (16 == aes.keysize) {
+        aes.algo = GCRYPT_CIPHER_AES128;
+    }
+    else {
+        fprintf(stderr, "[!] invalid keysize! ");
+        fprintf(stderr, "must be one of 128, 192, or 256.\n");
+        exit 1;
+    }
+
 
     if (crypto_init()) {
         return EXIT_FAILURE;
@@ -49,4 +90,5 @@ int main(int argc, char **argv) {
 
     return crypto_shutdown();
 }
+
 
