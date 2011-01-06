@@ -9,6 +9,10 @@
 #include "cryptoinit.h"
 
 int crypto_init( ) {
+    #ifdef DBEUG
+    printf("[+] initialising gcrypt...\n");
+    #endif
+
     if (! gcry_check_version(GCRYPT_MIN_VERSION)) {
         #ifdef DEBUG
         fprintf("[!] version mismatch. the minimum version is %s\n", 
@@ -36,10 +40,18 @@ int crypto_init( ) {
     /* signal initialization complete  - library ready for use */
     gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 
+    #ifdef DEBUG
+    printf("[+] finished initialisation...\n");
+    #endif
+
     return EXIT_SUCCESS;
 }
 
 int crypto_shutdown( struct crypto_t **keyring ) {
+    #ifdef DEBUG
+    printf("[+] shutting down crypto system...\n");
+    #endif
+
     struct crypto_t *key = keyring;
 
     while (NULL != key) {
@@ -57,12 +69,41 @@ int crypto_shutdown( struct crypto_t **keyring ) {
     gcry_control(GCRYCTL_TERM_SECMEM);
     gcry_control(GCRYCTL_DISABLE_SECMEM);
 
+    #ifdef DEBUG
+    printf("[+] crypto system shutdown!\n");
+    #endif
+
     return EXIT_SUCCESS;
 }
 
 int crypto_genkey( struct crypto_t *keyinfo ) {
+    #ifdef DEBUG
+    printf("[+] generating key...\n");
+    #endif
+
     if (! NULL == keyinfo->key) {
         gcry_free(keyinfo->key);
         keyinfo->key = NULL;
     }
+
+    #ifdef SECURE_MEM
+    keyinfo->key = (char *) gcry_random_bytes_secure(
+                                keyfile->keysize * sizeof(char),
+                                RANDOM_STRENGTH);
+    #else
+    keyinfo->key = (char *) gcry_random_bytes(
+                                keyfile->keysize * sizeof(char),
+                                RANDOM_STRENGTH);
+    #endif
+
+    if (NULL == keyinfo->key) {
+        #ifdef DEBUG
+        fprintf(stderr, "[!] error generating key!\n");
+        #endif
+
+        return EXIT_FAILURE;
+    }
+    
+    return EXIT_SUCCESS;
+}
 
