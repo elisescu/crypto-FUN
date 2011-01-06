@@ -113,10 +113,6 @@ int crypto_genkey( struct crypto_t *keydata ) {
 
 /* TODO: clean up this section to remove code duplication */
 int crypto_loadkeyfile( const char *keyfile, struct crypto_t *keydata ) {
-    #ifdef DEBUG
-    printf("[+] attempting to load key from file %s...\n", keyfile);
-    #endif
-
     /* if a NULL filename was passed in, the correct behaviour is to
      * die, as the user has no way of storing the key */
     if (NULL == keyfile) {
@@ -126,6 +122,10 @@ int crypto_loadkeyfile( const char *keyfile, struct crypto_t *keydata ) {
 
         return EXIT_FAILURE;
     }
+
+    #ifdef DEBUG
+    printf("[+] attempting to load key from file %s...\n", keyfile);
+    #endif
 
     size_t read_sz = 0;
     FILE *kp = fopen(keyfile, "r");
@@ -163,6 +163,7 @@ int crypto_loadkeyfile( const char *keyfile, struct crypto_t *keydata ) {
             exit(2);
         }
 
+        /* TODO: close before dumping */
         else {
             crypto_dumpkey(keyfile, keydata);
             return EXIT_SUCCESS;
@@ -170,11 +171,91 @@ int crypto_loadkeyfile( const char *keyfile, struct crypto_t *keydata ) {
     }
 
     else {
+        if (! 0 == fclose(kp)) {
+            /* key was loaded, but the keyfile is in an inconsistent 
+             * state. this is bad... */
+            #ifdef DEBUG
+            fprintf(stderr, "[!] key was loaded, but encountered an ",
+                    "error closing the keyfile!\n");
+            perror("fclose");
+            #endif
+
+            return EXIT_FAILURE;
+        }
+    
+        else {
+            #ifdef DEBUG
+            printf("[+] key successfully loaded!");
+            #endif
+
+            return EXIT_SUCCESS;
+        }
+    }
+}
+
+int crypto_dumpkey( const char *keyfile, struct crypto_t *keydata ) {
+    /* if a NULL keyfile was passed, we can't very well write to that,
+     * now can we? */
+    if (NULL == keyfile) {
         #ifdef DEBUG
-        printf("[+] key successfully loaded!");
+        fprintf(stderr, "[!] can't write to a NULL keyfile!\n");
+        return EXIT_FAILURE;
+    }
+
+    #ifdef DEBUG
+    printf("[+] attempting to write key to keyfile %s...\n", keyfile);
+    #endif
+
+    size_t write_sz = 0;
+    FILE *kp = fopen(keyfile, "w");
+
+    /* sanity check to make sure the file was opened successfully */
+    if ( ferror(kp) ) {
+        #ifdef DBEUG
+        fprintf(stderr, "[!] error opening %s for write!\n", keyfile);
+        #endif
+
+        return EXIT_FAILURE;
+    }
+
+    /* write out the key to the keyfile */
+    write_sz = fwrite(keydata->key, sizeof(char), keydata->keysize, kp);
+
+    /* ensure the expected number of bytes were written */
+    if (keydata->keysize != write_sz) {
+        #ifdef DBEUG
+        fprintf(stderr, "[!] wrote an invalid number of bytes to %s!\n", 
+                keyfile);
+        fprintf(stderr, "\t(expected %u, wrote %u bytes)\n", 
+                keydata->keysize, write_sz);
+        #endif
+
+        return EXIT_FAILURE;
+    }
+
+    #ifdef DEBUG
+    printf("[+] successfully wrote key!\n");
+    #endif
+
+    /* if the keyfile can't be closed, it is in an inconsistent state;
+     * in theory an attacker could write to it */
+    if (! 0 == fclose(kp)) {
+        #ifdef DEBUG
+        fprintf(stderr, "[!] key successfully written but could not close ",
+                "keyfile!\n");
+        perror("fclose");
+        #endif
+
+        return EXIT_FAILURE;
+    }
+
+    else {
+        #ifdef DEBUG
+        printf("[+] key successfully written to %s!\n");
         #endif
 
         return EXIT_SUCCESS;
     }
 }
 
+    

@@ -73,4 +73,4 @@ int crypto_destroykeyfile( const char *keyfile, size_t passes = 1 );
 int crypto_zerokey( struct crypto_t *keyinfo );
 
 
-
+#endif
