@@ -81,21 +81,25 @@ int crypto_genkey( struct crypto_t *keyinfo ) {
     printf("[+] generating key...\n");
     #endif
 
+    /* make sure the key doesn't have data in it */
     if (! NULL == keyinfo->key) {
         gcry_free(keyinfo->key);
         keyinfo->key = NULL;
     }
 
     #ifdef SECURE_MEM
+    /* if we're using secure mem, get the key from there */
     keyinfo->key = (char *) gcry_random_bytes_secure(
                                 keyfile->keysize * sizeof(char),
                                 RANDOM_STRENGTH);
     #else
+    /* fill the key with keysize random bytes */
     keyinfo->key = (char *) gcry_random_bytes(
                                 keyfile->keysize * sizeof(char),
                                 RANDOM_STRENGTH);
     #endif
 
+    /* did we make it, Jim!? */
     if (NULL == keyinfo->key) {
         #ifdef DEBUG
         fprintf(stderr, "[!] error generating key!\n");
@@ -106,4 +110,5 @@ int crypto_genkey( struct crypto_t *keyinfo ) {
     
     return EXIT_SUCCESS;
 }
+
 
