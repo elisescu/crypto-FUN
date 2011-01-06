@@ -4,7 +4,7 @@
  *
  * configuration options for aescrypt
  */
-_
+ 
 /* use secure memory */
 #define 	SECURE_MEM		1
 

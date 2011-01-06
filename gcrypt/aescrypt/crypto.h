@@ -16,6 +16,6 @@ struct crypto_t {
     size_t keysize;
     char *key;
     gcry_cipher_spec_t algo;
-}
+};
 
 #endif
