@@ -63,4 +63,30 @@ enum crypto_op {
     decrypt
 };
 
+/********************************************************************
+ * crypto_key_return_t:                                             *
+ *      return type enumeration for the key generation functions    *
+ *                                                                  *
+ * failed:  operation failed                                        *
+ * success: operation succeeded as intended                         *
+ * keygen:  the key should have been loaded the key file was empty  *
+ *          and the key was generated. after verifying the file     *
+ *          keyfile name, the key should be written using dumpkey   *
+ *          this behaviour is only triggered when the global        *
+ *          variable generate_keys is set to 1.                     *
+ * size_mismatch: the key loaded from the file didn't match the     *
+ *          expected key size. if the global generate_keys is set   *
+ *          to 1, a new key was generated.                          *
+ * keygen_err: according to generate_keys, a key should have been   *
+ *          generated but the generation failed.                    *
+ ********************************************************************/
+ enum crypto_key_return_t {
+    failed          = -1,
+    success,
+    keygen,
+    size_mismatch,
+    keygen_err
+};
+
+
 #endif

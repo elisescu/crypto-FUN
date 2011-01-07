@@ -1,0 +1,18 @@
+ARCHITECTURE OVERVIEW:
+=====================
+
+The crypto libraries use the concept of a global keystore and metakeys.
+
+A metakey is a struct containing the key and additional information. It is 
+defined in crypto.h.
+
+The keystore is an array of metakeys, and is kept globally to prevent memory
+leakage from not freeing all the memory allocated to keys. This is particularly
+relevant when dealing with secure memory, in particular the crypto_shutdown
+function. The keystore is defined in crypto.h and initialised in cryptoinit.h
+in the crypto_init() function.
+
+A program creates a pointer to a keystore_t and initialises that with 
+crypto_init(). 
+
+
