@@ -13,18 +13,54 @@
 #include <gcrypt.h>
 #include <stdlib.h>
 
-struct crypto_t {
+/**************************************************************************
+ *                                structs                                 *
+ **************************************************************************/
+
+/********************************************************************
+ * metakey_t:                                                       *
+ *      symmetric key with additional information attached          *
+ *                                                                  *
+ * keysize: number of bytes in the key (i.e. 256-bit key has a key- *
+ *          size of 32)                                             *
+ * key: the raw key bytes                                           *
+ * algo: an int specifying one of the gcrypt ciphers                *
+ * securemem: this key uses secure memory                           *
+ ********************************************************************/
+struct metakey_t {
     size_t keysize;
     char *key;
-    gcry_cipher_spec_t algo;
+    int algo;
     unsigned short int securemem;
 };
 
-typedef struct crypto_t ** keyring_t;
+/********************************************************************
+ * keystore_t:                                                      *
+ *      global keystore                                             *
+ *                                                                  *
+ * store: array of metakey_t's                                      *
+ * size: number of keys in the array                                *
+ ********************************************************************/
+extern struct keystore_t {
+    metakey_t **store;
+    size_t size;
+} key_store;
 
+
+/**************************************************************************
+ *                                enums                                   *
+ **************************************************************************/
+
+/********************************************************************
+ * crypto_op:                                                       *
+ *      enumeration for various crypto operations                   *
+ *                                                                  *
+ * null: operator not initialised                                   *
+ ********************************************************************/
 enum crypto_op {
-    ENCRYPT,
-    DECRYPT
+    null    = 0,
+    encrypt,
+    decrypt
 };
 
 #endif

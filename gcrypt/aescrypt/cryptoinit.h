@@ -10,67 +10,16 @@
 #define __CRYPTOINIT_H
 
 #include "config.h"
+#include "crypto.h"
 
 #include <stdlib.h>
 #include <gcrypt.h>
 
-/* defines */
+/* global keystore */
+static keystore_t key_store;
 
-/************************/
-/* function definitions */
-/************************/
-
-/*
- * crypto_init: initialise gcrypt library *
- *      arguments: none
- *      returns: zero on success, non-zero on error
- */
-int crypto_init( void );
-
-/*
- * crypto_shutdown: zeroise any secure memory and close out session
- *      arguments: an array of crypto_t structs
- *      returns: zero on success, non-zero on error
- */
-int crypto_shutdown( struct crypto_t **keyring);
-
-/*
- * cryrpto_genkey: generate a key
- *      arguments: a crypto_t struct with information about the key
- *      returns: zero on success, non-zero on failure
- */
-int crypto_genkey( struct crypto_t **keyring, size_t key_index );
-
-/*
- * crypto_loadkeyfile: load a key from a file
- *      arguments: a crypto_t struct with information about the key
- *      returns: zero on success, non-zero on failure
- */
-int crypto_loadkeyfile( struct crypto_t *keydata );
-
-/*
- * crypto_dumpkey: dump key to file
- *      arguments: a const char* storing the file's name, a crypto_t struct
- *                 with info about the key
- *      returns: zero on success, non-zero on failure
- */
-int crypto_dumpkey( const char *keyfile, struct crypto_t *keydata );
-
-/*
- * crypto_destroykeyfile: overwrite the keyfile a given number of times
- *                 with cryptographically random data
- *      arguments: const char * storing the keyfile's name, a size_t with
- *                 the number of passes to overwrite the file with
- *      returns: zero on success, non-zero on failure
- */
-int crypto_destroykeyfile( const char *keyfile, size_t passes );
-
-/*
- * crypto_zerokey: zeroise the key
- *      arguments: a struct crypto_t storing the key to be wiped
- *      returns: zero on success, non-zero on failure
- */
-int crypto_zerokey( struct crypto_t *keyinfo );
-
-
-#endif
+/*******************************/
+/* initialisation and shutdown */
+/*******************************/
+keystore_t *crypto_init( void );
+int crypto_shutdown( void );
