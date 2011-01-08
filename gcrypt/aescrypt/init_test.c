@@ -25,10 +25,16 @@ int main(int argc, char **argv ) {
     int loadkey                     = 0;
 
     /* check for load / dump operation */
-    if (2 == argc) {
-        loadkey = 1;
-        printf("[+] %s: will load key from file %s...\n", argv[0], 
-                argv[1]);
+    if (argc > 1) {
+        if (argc >= 2) {
+            loadkey = 1;
+            printf("[+] %s: will load key from file %s...\n", argv[0], 
+                    argv[1]);
+        }
+
+        if (2 < argc) {
+            keysize = strtol(argv[2], NULL, 0);
+        }
     }
 
     /* initialisation returns NULL on failure */
