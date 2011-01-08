@@ -56,10 +56,10 @@
  * otherwise, pull random numbers from PRNG                         *
  ********************************************************************/
 #ifdef SECURE_MEM
-#define     RNG_METHOD                  gcryt_random_bytes_secure
+#define     RNG_METHOD                  gcry_random_bytes_secure
 
 #else
-#define     RNG_METHOD                  gcrypt_random_bytes
+#define     RNG_METHOD                  gcry_random_bytes
 
 #endif
 
@@ -123,7 +123,7 @@ typedef enum crypto_op crypto_op_t;
  * crypto_key_return_t:                                             *
  *      return type enumeration for the key generation functions    *
  *                                                                  *
- * KEY_FAILED:  key operation failed                                *
+ * KEY_FAILURE:  key operation failed                                *
  * KEY_SUCCESS: key operation succeeded as intended                 *
  * KEYGEN:  the key should have been loaded the key file was empty  *
  *          and the key was generated. after verifying the file     *
@@ -135,13 +135,15 @@ typedef enum crypto_op crypto_op_t;
  *          to 1, a new key was generated.                          *
  * KEYGEN_ERR: according to generate_keys, a key should have been   *
  *          generated but the generation failed.                    *
+ * KEY_NOT_INIT: the crypto library has not been initialised        *
  ********************************************************************/
 enum crypto_key_return {
-    KEY_FAILED          = -1,
+    KEY_FAILURE          = -1,
     KEY_SUCCESS,
     KEYGEN,
     SIZE_MISMATCH,
-    KEYGEN_ERR
+    KEYGEN_ERR,
+    KEY_NOT_INIT
 };
 
 typedef enum crypto_key_return crypto_key_return_t;

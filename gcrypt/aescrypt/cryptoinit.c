@@ -71,7 +71,6 @@ keystore_t crypto_init( ) {
     keystore->size  = 0;
 
     for (i = 0; i < KEYSTORE_SIZE; ++i) {
-        size_t keysize = 0x20;
 
         #ifdef DEBUG
         printf("allocating space for key #%u with size %u bytes...\n", 
@@ -82,7 +81,6 @@ keystore_t crypto_init( ) {
                                          sizeof(struct metakey));
         keystore->store[i]->key = (unsigned char *) CRYPTO_MALLOC(
                                     keysize, sizeof(unsigned char));
-        keystore->store[i]->keysize = keysize;
         keystore->store[i]->initialised = 1;
 
         #ifdef SECURE_MEM

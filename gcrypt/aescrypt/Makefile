@@ -22,6 +22,9 @@ init_test: init_test.o cryptoinit.o
 init_test.o: init_test.c
 	$(CC) -c -o init_test.o init_test.c
 
+metakey.o: metakey.c
+	$(CC) $(CFLAGS) -c -o metakey.o metakey.c
+
 main.o: main.c
 	$(CC) -c -o main.o main.c
 
