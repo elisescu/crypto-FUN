@@ -106,6 +106,8 @@ int main(int argc, char **argv ) {
         }
     } /* end key loading */
 
+    key_result = crypto_zerokey( keystore->store[0] );
+
     init_result = crypto_shutdown( );
 
     return init_result;

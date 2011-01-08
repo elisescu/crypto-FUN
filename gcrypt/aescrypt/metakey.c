@@ -287,3 +287,32 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
     return result;
 } /* end crypto_dumpkey */
 
+crypto_key_return_t crypto_zerokey( metakey_t mk ) {
+    crypto_key_return_t result = KEY_FAILURE;
+    size_t i = 0;
+
+    if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
+        #ifdef DEBUG
+        fprintf(stderr, "[!] crypto library not initialised!\n");
+        #endif
+
+        return LIB_NOT_INIT;
+    }
+
+    if (! 1 == mk->initialised ) {
+        #ifdef DEBUG
+        fprintf(stderr, "[!] key not initialised!\n");
+        #endif
+
+        return KEY_NOT_INIT;
+    }
+
+    gcry_create_nonce(mk->key, mk->keysize);
+    for (i = 0; i < mk->keysize; ++i) {
+        mk->key[i] = '\x00';
+    }
+
+    result = KEY_SUCCESS;
+
+    return result;
+}
