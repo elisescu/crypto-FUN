@@ -94,6 +94,19 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
     }
 
     /* the keyfile is now open without error */
+    mk->keysize = keysize;
+
+    /* calloc memory for the key */
+    mk->key = (unsigned char *) CRYPTO_MALLOC( mk->keysize, 
+                                               sizeof(unsigned char));
+    if (NULL == mk->key) {
+        #ifdef DEBUG
+        fprintf(stderr, "[!] error allocating memory for key!\n");
+        #endif DEBUG
+
+        return result;
+    }
+    /* key has now been allocated memory */
 
     /* read keysize + 1 bytes from the file: if we actually read keysize + 1
      * bytes, it means there is a key mismatch. */
