@@ -69,8 +69,12 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
         return result;
     }
 
+    #ifdef DEBUG
+    printf("[+] attempting to open keyfile %s...\n", filename);
+    #endif 
+
     kf = fopen(filename, "r");
-    if (0 != ferror(kf)) {
+    if ((NULL == kf) || (0 != ferror(kf))) {
         #ifdef DEBUG
         fprintf(stderr, "[!] error opening file %s...\n", filename);
         perror("fopen");
@@ -105,12 +109,13 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
     mk->keysize = keysize;
 
     /* calloc memory for the key */
+    gcry_free(mk->key);     /* memory allocated during initialisation */
     mk->key = (unsigned char *) CRYPTO_MALLOC( mk->keysize, 
                                                sizeof(unsigned char));
     if (NULL == mk->key) {
         #ifdef DEBUG
         fprintf(stderr, "[!] error allocating memory for key!\n");
-        #endif DEBUG
+        #endif
 
         return result;
     }
@@ -126,7 +131,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
      *  2. with a non-zero fresult, we need to actually check the number
      *  of bytes copied into tmp_key to make sure they match.
      */
-    if (0 != fresult || keysize != strlen(tmp_key)) {
+    if (0 != fresult || keysize != strlen((char *)tmp_key)) {
         #ifdef DBEUG
         fprintf(stderr, "[!] key size mismatch in file %s: ", filename);
         fprintf(stderr, "expected %u bytes, actually read %u bytes!\n",
@@ -171,7 +176,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
     /* at this point, the key was loaded without error */
 
     /* copy tmp_key into mk->key and wipe the temp key */
-    strncpy(mk->key, tmp_key, mk->keysize);
+    strncpy((char *) mk->key, (char *) tmp_key, mk->keysize);
     gcry_create_nonce(tmp_key, mk->keysize);
     gcry_free(tmp_key);
 

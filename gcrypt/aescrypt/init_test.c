@@ -13,7 +13,7 @@
 #include "cryptoinit.h"
 #include "metakey.h"
 
-#define KEYFILE             "aes128.key"
+#define KEYFILE             "aes.key"
 
 extern keystore_t keystore;
 
@@ -26,11 +26,9 @@ int main(int argc, char **argv ) {
 
     /* check for load / dump operation */
     if (2 == argc) {
-        if ( (1 == strlen(argv[1])) && (0 == strncmp(argv[1], "l", 1))) {
-            loadkey = 1;
-            printf("[+] %s: will load key from file %s...\n", argv[0], 
-                    KEYFILE);
-        }
+        loadkey = 1;
+        printf("[+] %s: will load key from file %s...\n", argv[0], 
+                argv[1]);
     }
 
     /* initialisation returns NULL on failure */
@@ -57,18 +55,18 @@ int main(int argc, char **argv ) {
 
         printf("[!] %s: key successfully generated!\n", argv[0]);
 
-        key_result = crypto_dumpkey(KEYFILE, keystore->store[0]);
+        key_result = crypto_dumpkey(argv[1], keystore->store[0]);
         if (KEY_SUCCESS == key_result) {
-            printf("[!] %s: key dumped to %s!\n", argv[0], KEYFILE);
+            printf("[!] %s: key dumped to %s!\n", argv[0], argv[1]);
         }
     } /* end key dump handling */
 
     else {
-        key_result = crypto_loadkey(KEYFILE, keystore->store[0], keysize);
+        key_result = crypto_loadkey(argv[1], keystore->store[0], keysize);
 
         switch (key_result) {
             case KEY_FAILURE:
-                fprintf(stderr, "[!] %s: error loading key!\n", KEYFILE);
+                fprintf(stderr, "[!] %s: error loading key!\n", argv[1]);
                 break;
             case KEY_SUCCESS:
                 fprintf(stderr, "[+] %s: key successfully loaded!\n",
@@ -76,10 +74,10 @@ int main(int argc, char **argv ) {
                 break;
             case KEYGEN:
                 fprintf(stderr, "[!] %s: error reading %s, key was ",
-                        argv[0], KEYFILE);
+                        argv[0], argv[1]);
                 fprintf(stderr, "generated.\n");
             case SIZE_MISMATCH:
-                fprintf(stderr, "[!] %s: the key read was the wrong length",
+                fprintf(stderr, "[!] %s: the key read was the wrong length!\n",
                         argv[0]);
                 break;
             case KEYGEN_ERR:
@@ -92,7 +90,7 @@ int main(int argc, char **argv ) {
                         argv[0]);
                 break;
             case INCONSISTENT_STATE:
-                fprintf(stderr, "[!] %s: keyfile in an inconsistent state!",
+                fprintf(stderr, "[!] %s: keyfile in an inconsistent state!\n",
                         argv[0]);
                 break;
             default:
