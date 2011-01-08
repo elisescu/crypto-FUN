@@ -15,9 +15,6 @@
 #include <stdlib.h>
 #include <gcrypt.h>
 
-/* global keystore */
-static keystore_t keystore = NULL;
-static int generate_keys = 0;
 
 /*******************************/
 /* initialisation and shutdown */

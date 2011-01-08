@@ -1,10 +1,10 @@
-/*
- * cryptoinit.c
- * Kyle Isom <coder@kyleisom.net>
- * 2011-01-06
- *
- * cryptographic initialisation functions, including key generation 
- */
+/**************************************************************************
+ * cryptoinit.c                                                           *
+ * 4096R/B7B720D6 "Kyle Isom <coder@kyleisom.net>"                        *
+ * 2011-01-06                                                             *
+ *                                                                        *
+ * cryptographic initialisation functions, including key generation       *
+ **************************************************************************/
 
 #include "cryptoinit.h"
 

@@ -30,3 +30,7 @@
  * an algorithm other than AES. */
 #define         MAX_KEY_LENGTH          32
 
+/* define the size of the keystore
+ * note that the current version uses a statically-sized keystore */
+#define         KEYSTORE_SIZE           1
+
