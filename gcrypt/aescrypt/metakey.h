@@ -68,20 +68,30 @@ crypto_key_return_t crypto_loadkey( const char *, metakey_t, size_t );
  *                 metakey_t containing the key to be written. the keysize
  *                 in the metakey_t will be used to define the size of the
  *                 key to be written.
+ *      returns: a crypto_key_return_t with the standard error codes 
+ *                 defined in crypto.h. note that a SIZE_MISMATCH return
+ *                 does not indicate the key was generated; 
  */
 crypto_key_return_t crypto_dumpkey( const char *, metakey_t );
+
+/* crypto_zerokey: zeroise a key. the key is randomised with a nonce of
+ *                 the same size as the key, then every byte is set to 0.
+ *      arguments: a metakey_t to be blanked
+ *      returns: a crypto_key_return_t returning one of the following codes:
+ *                 KEY_FAILURE, KEY_SUCCESS, KEY_NOT_INIT, LIB_NOT_INIT
+ */
 crypto_key_return_t crypto_zerokey( metakey_t );
 
 /********************************/
 /* keyring functions            */
 /********************************/
-crypto_key_return_t crypto_zerokeyring( void );
+crypto_key_return_t crypto_zerokeystore( void );
 
 /********************************/
 /* miscellaneous functions      */
 /********************************/
-crypto_key_return_t set_autogen( void );
-crypto_key_return_t unset_autogen( void );
+void set_autogen( void );
+void unset_autogen( void );
 int crypto_autokeygen_status( void );
 crypto_key_return_t crypto_wipe_keyfile( const char *, int );
 

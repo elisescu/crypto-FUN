@@ -60,6 +60,7 @@ int main(int argc, char **argv ) {
         }
 
         printf("[!] %s: key successfully generated!\n", argv[0]);
+        keystore->size++;
 
         key_result = crypto_dumpkey(argv[1], keystore->store[0]);
         if (KEY_SUCCESS == key_result) {
@@ -77,11 +78,13 @@ int main(int argc, char **argv ) {
             case KEY_SUCCESS:
                 fprintf(stderr, "[+] %s: key successfully loaded!\n",
                         argv[0]);
+                keystore->size++;
                 break;
             case KEYGEN:
                 fprintf(stderr, "[!] %s: error reading %s, key was ",
                         argv[0], argv[1]);
                 fprintf(stderr, "generated.\n");
+                keystore->size++;
             case SIZE_MISMATCH:
                 fprintf(stderr, "[!] %s: the key read was the wrong length!\n",
                         argv[0]);
@@ -105,6 +108,9 @@ int main(int argc, char **argv ) {
                 break;
         }
     } /* end key loading */
+
+    printf("[+] %s: keystore size: %u\n", argv[0], 
+            (unsigned int) keystore->size);
 
     key_result = crypto_zerokey( keystore->store[0] );
 

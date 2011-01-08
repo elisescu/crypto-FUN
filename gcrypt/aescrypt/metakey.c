@@ -123,7 +123,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
 
     /* read keysize + 1 bytes from the file: if we actually read keysize + 1
      * bytes, it means there is a key mismatch. */
-    fresult = fread(tmp_key, keysize + 1, sizeof(unsigned char), kf);
+    fresult = fread(tmp_key, sizeof *tmp_key, keysize + 1, kf);
 
     /* two conditions to detect key size mismatches:
      *  1. fresult != 1: because we are trying to read keysize + 1 chars,
@@ -131,7 +131,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
      *  2. with a non-zero fresult, we need to actually check the number
      *  of bytes copied into tmp_key to make sure they match.
      */
-    if (0 != fresult || keysize != strlen((char *)tmp_key)) {
+    if (keysize != fresult) {
         #ifdef DBEUG
         fprintf(stderr, "[!] key size mismatch in file %s: ", filename);
         fprintf(stderr, "expected %u bytes, actually read %u bytes!\n",
@@ -229,7 +229,7 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
     
     /* open keyfile and check for errors */
     kf = fopen(filename, "w");
-    if (0 != ferror(kf)) {
+    if ((NULL == kf) || (0 != ferror(kf))) {
         #ifdef DEBUG
         fprintf(stderr, "[!] error opening %s for write!\n", filename);
         perror("fopen");
@@ -315,4 +315,34 @@ crypto_key_return_t crypto_zerokey( metakey_t mk ) {
     result = KEY_SUCCESS;
 
     return result;
+}   /* end crypto_zerokey */
+
+
+crypto_key_return_t crypto_zerostore( ) {
+    crypto_key_return_t result = KEY_FAILURE;
+
+    return result;
+} /* end crypto_zerokeystore */
+
+
+/* auto key generation functions - all are one line */
+void set_autogen( ) {
+    generate_keys = 1;
 }
+
+void unset_autogen( ) {
+    generate_keys = 0;
+}
+
+int crypto_autogen_status( ) {
+    return generate_keys;
+}
+/* end auto key generation functions */
+
+
+crypto_key_return_t crypto_wipe_keyfile(const char *filename, int passes) {
+    crypto_key_return_t result = KEY_FAILURE;
+
+    return result;
+}
+
