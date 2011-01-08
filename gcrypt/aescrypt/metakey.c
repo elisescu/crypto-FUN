@@ -7,6 +7,7 @@
  **************************************************************************/
 
 #include <stdio.h>
+#include <string.h>
 #include "metakey.h"
 
 /* key autogeneration flag */
@@ -50,6 +51,13 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
     crypto_key_return_t result = KEY_FAILURE;
     FILE *kf = NULL;
     size_t fresult;
+
+    /* tmp_key has size keysize + 2 for two reasons:
+     *  1. one extra char to detect key size mismatches
+     *  2. provide a null terminator to strlen
+     */
+    unsigned char *tmp_key = (unsigned char *) CRYPTO_MALLOC( keysize + 2,
+                                                sizeof(unsigned char));
 
     /* ensure library has been initialised */
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
@@ -110,14 +118,24 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
 
     /* read keysize + 1 bytes from the file: if we actually read keysize + 1
      * bytes, it means there is a key mismatch. */
-    fresult = fread(mk->key, keysize + 1, sizeof(unsigned char), kf);
+    fresult = fread(tmp_key, keysize + 1, sizeof(unsigned char), kf);
 
-    if (keysize != fresult) {
+    /* two conditions to detect key size mismatches:
+     *  1. fresult != 1: because we are trying to read keysize + 1 chars,
+     *  fread() will return a 0 if it couldn't read enough characters.
+     *  2. with a non-zero fresult, we need to actually check the number
+     *  of bytes copied into tmp_key to make sure they match.
+     */
+    if (0 != fresult || keysize != strlen(tmp_key)) {
         #ifdef DBEUG
         fprintf(stderr, "[!] key size mismatch in file %s: ", filename);
         fprintf(stderr, "expected %u bytes, actually read %u bytes!\n",
                 (unsigned int) keysize, (unsigned int) fresult);
         #endif
+
+        /* first step is to zeroise the tmp_key */
+        gcry_create_nonce(tmp_key, keysize + 1);
+        gcry_free(tmp_key);
 
         /* check to make sure the keyfile closes successfully,
          * if it doesn't close return with an inconsistent state error */
@@ -144,9 +162,20 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
                 return result;
             }
         } /* end automatic key generation */
+
+        else {
+            return SIZE_MISMATCH;
+        }
     } /* end read size check */
     
     /* at this point, the key was loaded without error */
+
+    /* copy tmp_key into mk->key and wipe the temp key */
+    strncpy(mk->key, tmp_key, mk->keysize);
+    gcry_create_nonce(tmp_key, mk->keysize);
+    gcry_free(tmp_key);
+
+
     #ifdef DEBUG
     printf("[+] key successfully loaded!\n");
     #endif
