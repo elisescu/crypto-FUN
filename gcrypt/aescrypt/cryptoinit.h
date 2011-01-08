@@ -16,13 +16,13 @@
 #include <gcrypt.h>
 
 /* global keystore */
-static keystore_t *key_store = NULL;
+static keystore_t keystore = NULL;
 static int generate_keys = 0;
 
 /*******************************/
 /* initialisation and shutdown */
 /*******************************/
-keystore_t *crypto_init( void );
+keystore_t crypto_init( void );
 int crypto_shutdown( void );
 
 /*******************************/
@@ -46,3 +46,4 @@ int unset_autogen( void );
 int crypto_wipe_keyfile( const char *, int );
 
 
+#endif

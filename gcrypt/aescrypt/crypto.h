@@ -27,12 +27,14 @@
  * algo: an int specifying one of the gcrypt ciphers                *
  * securemem: this key uses secure memory                           *
  ********************************************************************/
-struct metakey_t {
+struct metakey {
     size_t keysize;
     char *key;
     int algo;
     unsigned short int securemem;
 };
+
+typedef struct metakey * metakey_t;
 
 /********************************************************************
  * keystore_t:                                                      *
@@ -41,11 +43,12 @@ struct metakey_t {
  * store: array of metakey_t's                                      *
  * size: number of keys in the array                                *
  ********************************************************************/
-extern struct keystore_t {
-    metakey_t **store;
+extern struct keystore_s {
+    metakey_t *store;
     size_t size;
-} key_store;
+} keystore;
 
+typedef struct keystore keystore_t;
 
 /**************************************************************************
  *                                enums                                   *
