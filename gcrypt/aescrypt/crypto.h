@@ -135,7 +135,11 @@ typedef enum crypto_op crypto_op_t;
  *          to 1, a new key was generated.                          *
  * KEYGEN_ERR: according to generate_keys, a key should have been   *
  *          generated but the generation failed.                    *
- * KEY_NOT_INIT: the crypto library has not been initialised        *
+ * LIB_NOT_INIT: the crypto library has not been initialised        *
+ * INCONSISTENT_STATE: a keyfile  is in a possibly inconsistent     *
+ *          state. the most common cause is that an opened keyfile  *
+ *          could not be closed.                                    *
+ * KEY_NOT_INIT: attempted to use an uninitialised key              *
  ********************************************************************/
 enum crypto_key_return {
     KEY_FAILURE          = -1,
@@ -143,6 +147,8 @@ enum crypto_key_return {
     KEYGEN,
     SIZE_MISMATCH,
     KEYGEN_ERR,
+    LIB_NOT_INIT,
+    INCONSISTENT_STATE,
     KEY_NOT_INIT
 };
 

@@ -14,19 +14,19 @@ cryptoinit.o: cryptoinit.c
 	$(CC) $(CFLAGS) -c -o cryptoinit.o cryptoinit.c
 
 cryptfile.o: cryptfile.c
-	$(CC) -c -o cryptfile.o cryptfile.c
+	$(CC) $(CFLAGS) -c -o cryptfile.o cryptfile.c
 
-init_test: init_test.o cryptoinit.o
-	$(CC) $(CFLAGS) $(LIBS) -o init_test init_test.o cryptoinit.o
+init_test: init_test.o cryptoinit.o metakey.o
+	$(CC) $(CFLAGS) $(LIBS) -o init_test init_test.o cryptoinit.o metakey.o
 
 init_test.o: init_test.c
-	$(CC) -c -o init_test.o init_test.c
+	$(CC) $(CFLAGS) -c -o init_test.o init_test.c
 
 metakey.o: metakey.c
 	$(CC) $(CFLAGS) -c -o metakey.o metakey.c
 
 main.o: main.c
-	$(CC) -c -o main.o main.c
+	$(CC) $(CFLAGS) -c -o main.o main.c
 
 clean:	
 	rm -rf *.o a.out $(PROGNAME) init_test

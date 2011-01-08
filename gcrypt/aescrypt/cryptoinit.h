@@ -16,10 +16,26 @@
 #include <gcrypt.h>
 
 
-/*******************************/
-/* initialisation and shutdown */
-/*******************************/
+/**************************************************************************/
+/*                    initialisation and shutdown                         */
+/**************************************************************************/
+
+/* crypto_init: initialise the crypto libraries and keystore
+ *      arguments: none
+ *      returns: the address of the allocated keystore on success, NULL if
+ *               the keystore could not be initialised.
+ */
 keystore_t crypto_init( void );
-int crypto_shutdown( void );
+
+/* crypto_shutdown: shutdown the crypto librarys, destroy secure memory,
+ *                  and free the keystore memory
+ *      arguments: none
+ *      returns: 
+ *          CRYPTO_SUCCESS on success
+ *          CRYPTO_FAILURE if there was an error shutting down
+ *          CRYPTO_NOT_INIT if the crypto libraries have not been 
+ *              initialised yet.
+ */
+crypto_return_t crypto_shutdown( void );
 
 #endif

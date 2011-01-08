@@ -11,7 +11,6 @@
 
 /* global variables */
 extern keystore_t keystore;
-static int generate_keys = 0;
 
 
 /* crypto initialisation */
@@ -71,6 +70,7 @@ keystore_t crypto_init( ) {
     keystore->size  = 0;
 
     for (i = 0; i < KEYSTORE_SIZE; ++i) {
+        size_t keysize = 32;
 
         #ifdef DEBUG
         printf("allocating space for key #%u with size %u bytes...\n", 
@@ -94,7 +94,7 @@ keystore_t crypto_init( ) {
 }
 
 /* close down crypto library and destroy any secure memory */
-int crypto_shutdown( ) {
+crypto_return_t crypto_shutdown( ) {
     size_t i = 0;
 
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
