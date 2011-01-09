@@ -135,7 +135,7 @@ int main(int argc, char **argv ) {
     printf("[+] %s: keystore size: %u\n", argv[0], 
             (unsigned int) keystore->size);
 
-    key_result = crypto_zerokeystore( );
+    key_result = crypto_zerokeystore( keystore );
     if (KEY_SUCCESS != key_result) {
         fprintf(stderr, "[!] failed to zeroise the key store!\n");
     }

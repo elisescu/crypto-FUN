@@ -342,7 +342,7 @@ int crypto_autogen_status( ) {
 /**************************/
 /* clear out the keystore */
 /**************************/
-crypto_key_return_t crypto_zerokeystore( ) {
+crypto_key_return_t crypto_zerokeystore( keystore_t keystore ) {
     size_t i = 0;
     crypto_key_return_t result = INCONSISTENT_STATE;
     crypto_key_return_t zero   = KEY_FAILURE;
@@ -360,6 +360,8 @@ crypto_key_return_t crypto_zerokeystore( ) {
             if (zero != KEY_SUCCESS) {
                 result = zero;
             }
+
+            ++i;
         }
 
         if (INCONSISTENT_STATE == result) {

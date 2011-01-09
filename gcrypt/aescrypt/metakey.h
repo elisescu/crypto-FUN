@@ -89,7 +89,7 @@ extern crypto_key_return_t crypto_zerokey( metakey_t );
 /********************************/
 /* keyring functions            */
 /********************************/
-extern crypto_key_return_t crypto_zerokeystore( void );
+extern crypto_key_return_t crypto_zerokeystore( keystore_t keystore );
 
 /********************************/
 /* miscellaneous functions      */
