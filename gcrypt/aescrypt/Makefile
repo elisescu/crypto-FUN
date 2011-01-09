@@ -31,4 +31,7 @@ main.o: main.c
 clean:	
 	rm -rf *.o a.out $(PROGNAME) init_test
 
+ctags:
+	ctags *.c *.h >tags
+
 .PHONY:	all clean
