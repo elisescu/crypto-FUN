@@ -80,7 +80,7 @@ keystore_t crypto_init( ) {
         keystore->store[i] = (metakey_t) CRYPTO_MALLOC(1, 
                                          sizeof(struct metakey));
         keystore->store[i]->key = (unsigned char *) CRYPTO_MALLOC(
-                                    keysize, sizeof(unsigned char));
+                                    keysize, sizeof keystore->store[i]->key);
         keystore->store[i]->initialised = 1;
 
         #ifdef SECURE_MEM

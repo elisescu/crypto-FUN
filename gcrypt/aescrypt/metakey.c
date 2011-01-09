@@ -57,7 +57,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
      *  2. provide a null terminator to strlen
      */
     unsigned char *tmp_key = (unsigned char *) CRYPTO_MALLOC( keysize + 2,
-                                                sizeof(unsigned char));
+                                                sizeof *tmp_key);
 
     /* ensure library has been initialised */
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
@@ -110,8 +110,8 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
 
     /* calloc memory for the key */
     gcry_free(mk->key);     /* memory allocated during initialisation */
-    mk->key = (unsigned char *) CRYPTO_MALLOC( mk->keysize, 
-                                               sizeof(unsigned char));
+    mk->key = (unsigned char *) CRYPTO_MALLOC( mk->keysize, sizeof mk->key);
+
     if (NULL == mk->key) {
         #ifdef DEBUG
         fprintf(stderr, "[!] error allocating memory for key!\n");
