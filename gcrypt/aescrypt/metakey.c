@@ -209,6 +209,7 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
     crypto_key_return_t result = KEY_FAILURE;
     FILE *kf = NULL;
     size_t fresult = 0;
+    char mode[1] = "w";
     
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
         #ifdef DEBUG
@@ -228,7 +229,7 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
     }
     
     /* open keyfile and check for errors */
-    kf = fopen(filename, "w");
+    kf = fopen(filename, "w+");
     if ((NULL == kf) || (0 != ferror(kf))) {
         #ifdef DEBUG
         fprintf(stderr, "[!] error opening %s for write!\n", filename);
@@ -240,7 +241,7 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
 
     /* write key to file and check the appropriate number of bytes were 
      * written into the file */
-    fresult = fwrite(mk->key, mk->keysize, sizeof(unsigned char), kf);
+    fresult = fwrite(mk->key, sizeof mk->key, mk->keysize, kf);
     if (mk->keysize != fresult) {
         #ifdef DEBUG
         fprintf(stderr, "[!] error dumping key to %s: ", filename);
@@ -318,7 +319,7 @@ crypto_key_return_t crypto_zerokey( metakey_t mk ) {
 }   /* end crypto_zerokey */
 
 
-crypto_key_return_t crypto_zerostore( ) {
+crypto_key_return_t crypto_zerokeystore( ) {
     crypto_key_return_t result = KEY_FAILURE;
 
     return result;

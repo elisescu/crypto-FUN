@@ -62,9 +62,9 @@ int main(int argc, char **argv ) {
         printf("[!] %s: key successfully generated!\n", argv[0]);
         keystore->size++;
 
-        key_result = crypto_dumpkey(argv[1], keystore->store[0]);
+        key_result = crypto_dumpkey(KEYFILE, keystore->store[0]);
         if (KEY_SUCCESS == key_result) {
-            printf("[!] %s: key dumped to %s!\n", argv[0], argv[1]);
+            printf("[!] %s: key dumped to %s!\n", argv[0], KEYFILE);
         }
     } /* end key dump handling */
 
