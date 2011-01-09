@@ -37,8 +37,8 @@ int main(int argc, char **argv ) {
 
     /* check for load / dump operation */
     if (argc > 1) {
+        loadkey = 1;
         if (argc >= 2) {
-            loadkey = 1;
             printf("[+] %s: will load key from file %s...\n", argv[0], 
                     argv[1]);
         }
@@ -107,6 +107,9 @@ int main(int argc, char **argv ) {
             case SIZE_MISMATCH:
                 fprintf(stderr, "[!] %s: the key read was the wrong length!\n",
                         argv[0]);
+                if (1 == crypto_autogen_status()) {
+                    fprintf(stderr, "[!] but a new key was generated...\n");
+                }
                 break;
             case KEYGEN_ERR:
                 fprintf(stderr, "[!] %s: error reading file and error ",

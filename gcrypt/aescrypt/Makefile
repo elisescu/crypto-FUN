@@ -13,8 +13,8 @@ all: cryptinit.o cryptfile.o main.o
 cryptoinit.o: cryptoinit.c
 	$(CC) $(CFLAGS) -c -o cryptoinit.o cryptoinit.c
 
-cryptfile.o: cryptfile.c
-	$(CC) $(CFLAGS) -c -o cryptfile.o cryptfile.c
+cryptofile.o: cryptofile.c
+	$(CC) $(CFLAGS) -c -o cryptofile.o cryptofile.c
 
 init_test: init_test.o cryptoinit.o metakey.o
 	$(CC) $(CFLAGS) $(LIBS) -o init_test init_test.o cryptoinit.o metakey.o

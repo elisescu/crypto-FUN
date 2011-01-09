@@ -8,9 +8,12 @@
 
 #include "cryptoinit.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <gcrypt.h>
 
-
+/*************************/
 /* crypto initialisation */
+/*************************/
 keystore_t crypto_init( ) {
     size_t i = 0;           /* loop index */
     keystore = NULL;
@@ -35,7 +38,7 @@ keystore_t crypto_init( ) {
     /************************
      * set up secure memory *
      ************************/
-#ifdef SECURE_MEM
+#if SECURE_MEM != 0
 
 #ifdef DEBUG
     printf("[+] setting up secure memory...\n");
@@ -61,8 +64,8 @@ keystore_t crypto_init( ) {
 #endif
 
     /* allocate memory to keystore */
-    keystore    = (keystore_t) CRYPTO_MALLOC( 1, sizeof(struct keystore_s));
-    keystore->store = (metakey_t *) CRYPTO_MALLOC( KEYSTORE_SIZE,
+    keystore    = CRYPTO_MALLOC( 1, sizeof *keystore);
+    keystore->store = CRYPTO_MALLOC( KEYSTORE_SIZE,
             sizeof(metakey_t));
     keystore->size  = 0;
 
@@ -74,23 +77,21 @@ keystore_t crypto_init( ) {
                 i, keysize);
 #endif
 
-        keystore->store[i] = (metakey_t) CRYPTO_MALLOC(1, 
-                sizeof(struct metakey));
-        keystore->store[i]->key = (unsigned char *) CRYPTO_MALLOC(
-                keysize, sizeof keystore->store[i]->key);
+        keystore->store[i] = CRYPTO_MALLOC(1, sizeof(struct metakey));
+        keystore->store[i]->key = CRYPTO_MALLOC( keysize, 
+                                  sizeof keystore->store[i]->key);
         keystore->store[i]->initialised = 1;
 
-#ifdef SECURE_MEM
-        keystore->store[i]->sm = 1;
-#else
-        keystore->store[i]->sm = 0;
-#endif
+        keystore->store[i]->sm = SECURE_MEM != 0;
     }
 
     return keystore;
 }
 
+
+/***********************************************************/
 /* close down crypto library and destroy any secure memory */
+/***********************************************************/
 crypto_return_t crypto_shutdown( ) {
     size_t i = 0;
 
@@ -120,11 +121,9 @@ crypto_return_t crypto_shutdown( ) {
             continue;
         }
 
-        /* if secure memory is used, fill key with random data */
-#ifdef SECURE_MEM
         gcry_create_nonce(keystore->store[i]->key, 
                 keystore->store[i]->keysize);
-#endif
+
         gcry_free(keystore->store[i]);
         keystore->store[i] = NULL;
     }
@@ -134,9 +133,9 @@ crypto_return_t crypto_shutdown( ) {
     gcry_free( keystore );
 
     /* if secure memory is used, zeroise and shutdown secure memory */
-#ifdef SECURE_MEM
+#if SECURE_MEM != 0
     gcry_control(GCRYCTL_TERM_SECMEM);
-    gcry_control(GCRYCTL_TERM_SECMEM);
+    gcry_control(GCRYCTL_DISABLE_SECMEM);
 #endif
 
     return EXIT_SUCCESS;

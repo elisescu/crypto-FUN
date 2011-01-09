@@ -7,7 +7,15 @@
  **************************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <gcrypt.h>
+
+
+
 #include "metakey.h"
 
 /* key autogeneration flag */
@@ -27,10 +35,13 @@ crypto_key_return_t crypto_genkey( metakey_t mk, size_t keysize ) {
         return result;
     }
 
+#ifdef DEBUG
+    printf("[+] generating a new %u-bit key...\n", (unsigned int) keysize * 8);
+#endif
+
     /* in the initialisation, we allocated memory for each key already */
     gcry_free(mk->key);     /* need to free it to avoid mem leak */
-    mk->key = (unsigned char *) RNG_METHOD( mk->keysize, 
-            CRYPTO_RANDOM_STRENGTH );
+    mk->key = RNG_METHOD( mk->keysize, CRYPTO_RANDOM_STRENGTH );
 
     if (NULL == mk->key) {
 #ifdef DEBUG
@@ -56,8 +67,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
      *  1. one extra char to detect key size mismatches
      *  2. provide a null terminator to strlen
      */
-    unsigned char *tmp_key = (unsigned char *) CRYPTO_MALLOC( keysize + 2,
-            sizeof *tmp_key);
+    unsigned char *tmp_key = CRYPTO_MALLOC( keysize + 2, sizeof *tmp_key);
 
     /* ensure library has been initialised */
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
@@ -110,7 +120,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
 
     /* calloc memory for the key */
     gcry_free(mk->key);     /* memory allocated during initialisation */
-    mk->key = (unsigned char *) CRYPTO_MALLOC( mk->keysize, sizeof mk->key);
+    mk->key = CRYPTO_MALLOC( mk->keysize, sizeof mk->key);
 
     if (NULL == mk->key) {
 #ifdef DEBUG
@@ -409,11 +419,11 @@ crypto_key_return_t crypto_wipe_keyfile(const char *filename, size_t passes) {
 
         /* inner loop to write the buffer to the file */
         for (j = 0; j < rounds; ++j) {
+            size_t written = 0;
 #ifdef DEBUG
             printf("\twipe round %u\n", (unsigned int) j);
 #endif
 
-            size_t written = 0;
             rdata = CRYPTO_MALLOC( wipe_buf_size, sizeof rdata );
             gcry_create_nonce(rdata, wipe_buf_size);
 

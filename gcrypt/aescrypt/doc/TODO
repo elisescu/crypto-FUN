@@ -1,0 +1,8 @@
+cryptoinit.c:
+    1. when the keyfile is in an inconsistent state (fail opening / closing),
+    there needs to be a consistent way to deal with shutting down system.
+        - if used, secure memory needs to be cleared
+        - all key storage needs to be reclaimed
+        - solution: 
+            * cryptographic initialisation should only allow one process one keyring
+            * best way to accomplish - mutex?

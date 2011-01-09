@@ -12,9 +12,6 @@
 #include "config.h"
 #include "crypto.h"
 
-#include <stdlib.h>
-#include <gcrypt.h>
-
 
 /* global variables */
 extern keystore_t keystore;

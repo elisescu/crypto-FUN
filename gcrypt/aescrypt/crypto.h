@@ -10,12 +10,13 @@
 #ifndef __CRYPT_H
 #define __CRYPT_H
 
-#include <gcrypt.h>
 #include <stdlib.h>
 
 /**************************************************************************
  *                           defines / macros                             *
  **************************************************************************/
+
+#define     AUTOKEYGEN          1
 
 /********************************************************************
  * CRYPTO_MALLOC:                                                   *
@@ -24,7 +25,7 @@
  * allocate a segment of memory, zeroing it first. bases method     *
  * selection on the use of secure memory.                           *
  ********************************************************************/
-#ifdef SECURE_MEM
+#if SECURE_MEM != 0
 #define     CRYPTO_MALLOC               gcry_calloc_secure
 
 #else
@@ -39,7 +40,7 @@
  * if secure memory is used, random numbers will be very strong     *
  * otherwise, strong random numbers with be used                    *
  ********************************************************************/
-#ifdef SECURE_MEM
+#if SECURE_MEM != 0
 #define     CRYPTO_RANDOM_STRENGTH      GCRY_VERY_STRONG_RANDOM
 
 #else
@@ -55,7 +56,7 @@
  *  memory                                                          *
  * otherwise, pull random numbers from PRNG                         *
  ********************************************************************/
-#ifdef SECURE_MEM
+#if SECURE_MEM != 0
 #define     RNG_METHOD                  gcry_random_bytes_secure
 
 #else
