@@ -29,7 +29,7 @@ main.o: main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 clean:	
-	rm -rf *.o a.out $(PROGNAME) init_test
+	rm -rf *.o tags a.out $(PROGNAME) init_test 
 
 ctags:
 	ctags *.c *.h >tags
