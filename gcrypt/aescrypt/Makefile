@@ -16,8 +16,8 @@ cryptoinit.o: cryptoinit.c
 cryptofile.o: cryptofile.c
 	$(CC) $(CFLAGS) -c -o cryptofile.o cryptofile.c
 
-init_test: init_test.o cryptoinit.o metakey.o
-	$(CC) $(CFLAGS) $(LIBS) -o init_test init_test.o cryptoinit.o metakey.o
+init_test: init_test.o cryptoinit.o metakey.o cryptofile.o
+	$(CC) $(CFLAGS) $(LIBS) -o init_test init_test.o cryptoinit.o metakey.o cryptofile.o
 
 init_test.o: init_test.c
 	$(CC) $(CFLAGS) -c -o init_test.o init_test.c

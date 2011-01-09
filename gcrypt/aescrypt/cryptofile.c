@@ -17,7 +17,7 @@
 #include "crypto.h"
 #include "cryptofile.h"
 
-crypto_key_return_t crypto_wipe_keyfile(const char *filename, size_t passes) {
+crypto_key_return_t crypto_wipe_file(const char *filename, size_t passes) {
     crypto_key_return_t result = KEY_FAILURE;
     FILE *kf = NULL;
     struct stat kf_stat;
@@ -44,7 +44,7 @@ crypto_key_return_t crypto_wipe_keyfile(const char *filename, size_t passes) {
     /* compute number of rounds and the size of the random data buffer
      * that will be written to the file */
     file_size = (size_t) kf_stat.st_size;
-#ifdef SECURE_MEM
+#if SECURE_MEM != 0
     rounds = (file_size / (SECURE_MEM / 5)) + 1;
     wipe_buf_size = (SECURE_MEM / 5);
 #else

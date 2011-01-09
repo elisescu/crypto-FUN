@@ -25,7 +25,7 @@ extern keystore_t keystore;
  *      returns: the address of the allocated keystore on success, NULL if
  *               the keystore could not be initialised.
  */
-keystore_t crypto_init( void );
+extern keystore_t crypto_init( void );
 
 /* crypto_shutdown: shutdown the crypto librarys, destroy secure memory,
  *                  and free the keystore memory
@@ -36,6 +36,6 @@ keystore_t crypto_init( void );
  *          CRYPTO_NOT_INIT if the crypto libraries have not been 
  *              initialised yet.
  */
-crypto_return_t crypto_shutdown( void );
+extern crypto_return_t crypto_shutdown( void );
 
 #endif

@@ -12,6 +12,7 @@
 #include "crypto.h"
 #include "cryptoinit.h"
 #include "metakey.h"
+#include "cryptofile.h"
 
 #define KEYFILE             "aes.key"
 
@@ -80,7 +81,7 @@ int main(int argc, char **argv ) {
 
         printf("[+] preparing to wipe file...\n");
         pause_for_input();
-        key_result = crypto_wipe_keyfile(KEYFILE, 3);
+        key_result = crypto_wipe_file(KEYFILE, 3);
         if (KEY_SUCCESS != key_result) {
             fprintf(stderr, "[!] error wiping keyfile %s!\n", KEYFILE);
         }
@@ -134,7 +135,10 @@ int main(int argc, char **argv ) {
     printf("[+] %s: keystore size: %u\n", argv[0], 
             (unsigned int) keystore->size);
 
-    key_result = crypto_zerokey( keystore->store[0] );
+    key_result = crypto_zerokeystore( );
+    if (KEY_SUCCESS != key_result) {
+        fprintf(stderr, "[!] failed to zeroise the key store!\n");
+    }
 
     init_result = crypto_shutdown( );
 

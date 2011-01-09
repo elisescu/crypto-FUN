@@ -16,6 +16,8 @@
 
 #include "crypto.h"
 
+extern keystore_t keystore;
+
 /**************************************************************************/
 /*                  note on automatic key generation                      */
 /**************************************************************************/
@@ -46,7 +48,7 @@
  *      returns: a crypto_key_return_t with the standard error codes 
  *                defined in crypto.h.
  */
-crypto_key_return_t crypto_genkey( metakey_t, size_t );
+extern crypto_key_return_t crypto_genkey( metakey_t, size_t );
 
 /* crypto_loadkey: load a symmetric key from a file. if automatic key
  *                 generation is enabled and there is an error reading the
@@ -59,7 +61,7 @@ crypto_key_return_t crypto_genkey( metakey_t, size_t );
  *                function returns with INCONSISTENT_STATE, no key was 
  *                generated or loaded, and the metakey_t is not initialised
  */
-crypto_key_return_t crypto_loadkey( const char *, metakey_t, size_t );
+extern crypto_key_return_t crypto_loadkey( const char *, metakey_t, size_t );
 
 /* crypto_dumpkey: write a symmetric key to a file. automatic key generation
  *                 is not used in the event of error, as it is assumed the
@@ -74,7 +76,7 @@ crypto_key_return_t crypto_loadkey( const char *, metakey_t, size_t );
  *                 defined in crypto.h. note that a SIZE_MISMATCH return
  *                 does not indicate the key was generated; 
  */
-crypto_key_return_t crypto_dumpkey( const char *, metakey_t );
+extern crypto_key_return_t crypto_dumpkey( const char *, metakey_t );
 
 /* crypto_zerokey: zeroise a key. the key is randomised with a nonce of
  *                 the same size as the key, then every byte is set to 0.
@@ -82,20 +84,24 @@ crypto_key_return_t crypto_dumpkey( const char *, metakey_t );
  *      returns: a crypto_key_return_t returning one of the following codes:
  *                 KEY_FAILURE, KEY_SUCCESS, KEY_NOT_INIT, LIB_NOT_INIT
  */
-crypto_key_return_t crypto_zerokey( metakey_t );
+extern crypto_key_return_t crypto_zerokey( metakey_t );
 
 /********************************/
 /* keyring functions            */
 /********************************/
-crypto_key_return_t crypto_zerokeystore( void );
+extern crypto_key_return_t crypto_zerokeystore( void );
 
 /********************************/
 /* miscellaneous functions      */
 /********************************/
-void crypto_set_autogen( void );
-void crypto_unset_autogen( void );
-int crypto_autogen_status( void );
-crypto_key_return_t crypto_wipe_keyfile( const char *, size_t );
+
+/* this collection of functions activate, deactivate, and return the status
+ * respectively of the automatic key generation behaviour. see the header
+ * crypto.h for more information on this feature.
+ */
+extern void crypto_set_autogen( void );
+extern void crypto_unset_autogen( void );
+extern int crypto_autogen_status( void );
 
 
 
