@@ -12,7 +12,6 @@
 /* global variables */
 extern keystore_t keystore;
 
-
 /* crypto initialisation */
 keystore_t crypto_init( ) {
     size_t i = 0;           /* loop index */

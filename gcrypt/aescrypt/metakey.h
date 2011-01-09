@@ -12,7 +12,11 @@
 
 #include "config.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <gcrypt.h>
+
 #include "crypto.h"
 
 /**************************************************************************/
@@ -62,7 +66,8 @@ crypto_key_return_t crypto_loadkey( const char *, metakey_t, size_t );
 
 /* crypto_dumpkey: write a symmetric key to a file. automatic key generation
  *                 is not used in the event of error, as it is assumed the
- *                 key specified is already valid.
+ *                 key specified is already valid. if the filename already 
+ *                 exists, it will be overwritten.
  *      arguments: const char * containaing the file to be written (which
  *                 will be overwritten if it already exists), and a 
  *                 metakey_t containing the key to be written. the keysize
@@ -92,8 +97,8 @@ crypto_key_return_t crypto_zerokeystore( void );
 /********************************/
 void set_autogen( void );
 void unset_autogen( void );
-int crypto_autokeygen_status( void );
-crypto_key_return_t crypto_wipe_keyfile( const char *, int );
+int crypto_autogen_status( void );
+crypto_key_return_t crypto_wipe_keyfile( const char *, size_t );
 
 
 

@@ -17,6 +17,13 @@
 
 extern keystore_t keystore;
 
+void pause_for_input( void ) {
+    char s[2];
+    printf("press enter to continue...");
+    gets(&s);
+    fflush(stdout);
+}
+
 int main(int argc, char **argv ) {
     /* return values for the crypto functions */
     crypto_return_t init_result     = CRYPTO_FAILURE;
@@ -66,6 +73,14 @@ int main(int argc, char **argv ) {
         if (KEY_SUCCESS == key_result) {
             printf("[!] %s: key dumped to %s!\n", argv[0], KEYFILE);
         }
+
+        printf("[+] preparing to wipe file...\n");
+        pause_for_input();
+        key_result = crypto_wipe_keyfile(KEYFILE, 3);
+        if (KEY_SUCCESS != key_result) {
+            fprintf(stderr, "[!] error wiping keyfile %s!\n", KEYFILE);
+        }
+
     } /* end key dump handling */
 
     else {
