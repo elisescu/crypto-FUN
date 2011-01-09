@@ -20,9 +20,9 @@ crypto_key_return_t crypto_genkey( metakey_t mk, size_t keysize ) {
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
         result = KEY_NOT_INIT;
 
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] crypto library not initialised!\n");
-        #endif
+#endif
 
         return result;
     }
@@ -30,12 +30,12 @@ crypto_key_return_t crypto_genkey( metakey_t mk, size_t keysize ) {
     /* in the initialisation, we allocated memory for each key already */
     gcry_free(mk->key);     /* need to free it to avoid mem leak */
     mk->key = (unsigned char *) RNG_METHOD( mk->keysize, 
-                                            CRYPTO_RANDOM_STRENGTH );
+            CRYPTO_RANDOM_STRENGTH );
 
     if (NULL == mk->key) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] key generation failed!\n");
-        #endif
+#endif
 
         return result;
     }
@@ -47,7 +47,7 @@ crypto_key_return_t crypto_genkey( metakey_t mk, size_t keysize ) {
 } /* end crypto_genkey */
 
 crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
-                                    size_t keysize) {
+        size_t keysize) {
     crypto_key_return_t result = KEY_FAILURE;
     FILE *kf = NULL;
     size_t fresult;
@@ -57,34 +57,34 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
      *  2. provide a null terminator to strlen
      */
     unsigned char *tmp_key = (unsigned char *) CRYPTO_MALLOC( keysize + 2,
-                                                sizeof *tmp_key);
+            sizeof *tmp_key);
 
     /* ensure library has been initialised */
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] library not initialised!\n");
-        #endif
+#endif
 
         result = LIB_NOT_INIT;
         return result;
     }
 
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] attempting to open keyfile %s...\n", filename);
-    #endif 
+#endif 
 
     kf = fopen(filename, "r");
     if ((NULL == kf) || (0 != ferror(kf))) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] error opening file %s...\n", filename);
         perror("fopen");
-        #endif
+#endif
 
         /* if generate_keys is set, we should attempt to generate a new key */
         if (0 != generate_keys) {
-            #ifdef DEBUG
+#ifdef DEBUG
             printf("[+] attempting to generate a new key...\n");
-            #endif
+#endif
 
             /* don't check if the library is initialised, we already checked
              * that...  */
@@ -96,7 +96,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
             else if (KEY_FAILURE == result) {
                 return KEYGEN_ERR;
             }
-            
+
             else {
                 return result;
             }
@@ -113,9 +113,9 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
     mk->key = (unsigned char *) CRYPTO_MALLOC( mk->keysize, sizeof mk->key);
 
     if (NULL == mk->key) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] error allocating memory for key!\n");
-        #endif
+#endif
 
         return result;
     }
@@ -132,11 +132,11 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
      *  of bytes copied into tmp_key to make sure they match.
      */
     if (keysize != fresult) {
-        #ifdef DBEUG
+#ifdef DBEUG
         fprintf(stderr, "[!] key size mismatch in file %s: ", filename);
         fprintf(stderr, "expected %u bytes, actually read %u bytes!\n",
                 (unsigned int) keysize, (unsigned int) fresult);
-        #endif
+#endif
 
         /* first step is to zeroise the tmp_key */
         gcry_create_nonce(tmp_key, keysize + 1);
@@ -145,9 +145,9 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
         /* check to make sure the keyfile closes successfully,
          * if it doesn't close return with an inconsistent state error */
         if (0 != fclose(kf)) {
-            #ifdef DEBUG
+#ifdef DEBUG
             fprintf(stderr, "[!] error closing %s!\n", filename);
-            #endif
+#endif
 
             return INCONSISTENT_STATE;
         } /* end fclose error check */
@@ -172,7 +172,7 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
             return SIZE_MISMATCH;
         }
     } /* end read size check */
-    
+
     /* at this point, the key was loaded without error */
 
     /* copy tmp_key into mk->key and wipe the temp key */
@@ -181,20 +181,20 @@ crypto_key_return_t crypto_loadkey( const char *filename, metakey_t mk,
     gcry_free(tmp_key);
 
 
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] key successfully loaded!\n");
-    #endif
+#endif
 
     mk->initialised = 1;
 
     /* time to close and check for errors */
     if (0 != fclose(kf)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] error closing keyfile %s!\n", filename);
         fprintf(stderr, "[!] keyfile may be in an inconsistent state!\n");
         perror("fclose");
-        #endif 
-        
+#endif 
+
         result = INCONSISTENT_STATE;
     }
 
@@ -209,31 +209,31 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
     crypto_key_return_t result = KEY_FAILURE;
     FILE *kf = NULL;
     size_t fresult = 0;
-    
+
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] library not initialised!\n");
-        #endif
+#endif
 
         return LIB_NOT_INIT;
     }
 
     if (1 != mk->initialised) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] dumpkey(): attmepted to dump an uninitialised ");
         fprintf(stderr, "key!\n");
-        #endif
+#endif
 
         return KEY_NOT_INIT;
     }
-    
+
     /* open keyfile and check for errors */
     kf = fopen(filename, "w+");
     if ((NULL == kf) || (0 != ferror(kf))) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] error opening %s for write!\n", filename);
         perror("fopen");
-        #endif
+#endif
 
         return result;
     } /* end fopen error checking */
@@ -242,21 +242,21 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
      * written into the file */
     fresult = fwrite(mk->key, sizeof mk->key, mk->keysize, kf);
     if (mk->keysize != fresult) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] error dumping key to %s: ", filename);
         fprintf(stderr, "expected %u bytes, wrote %u bytes!\n",
                 (unsigned int) mk->keysize, (unsigned int) fresult);
-        #endif
+#endif
 
         result = SIZE_MISMATCH;
 
         /* close keyfile and check for errors */
         if (0 != fclose(kf)) {
-            #ifdef DEBUG
+#ifdef DEBUG
             fprintf(stderr, "[!] error closing keyfile. keyfile may be in an ");
             fprintf(stderr, "inconsistent state!\n");
             perror("fclose");
-            #endif
+#endif
 
             result = INCONSISTENT_STATE;
         }
@@ -270,12 +270,12 @@ crypto_key_return_t crypto_dumpkey( const char *filename, metakey_t mk ) {
 
     /* close and check for errors */
     if (0 != fclose(kf)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] error closing keyfile %s - keyfile may be in an ",
                 filename);
         fprintf(stderr, "inconsistent state!\n");
         perror("fclose");
-        #endif
+#endif
 
         result = INCONSISTENT_STATE;
     } /* end file close error handling */
@@ -292,17 +292,17 @@ crypto_key_return_t crypto_zerokey( metakey_t mk ) {
     size_t i = 0;
 
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] crypto library not initialised!\n");
-        #endif
+#endif
 
         return LIB_NOT_INIT;
     }
 
     if (! 1 == mk->initialised ) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] key not initialised!\n");
-        #endif
+#endif
 
         return KEY_NOT_INIT;
     }
@@ -326,11 +326,11 @@ crypto_key_return_t crypto_zerokeystore( ) {
 
 
 /* auto key generation functions - all are one line */
-void set_autogen( ) {
+void crypto_set_autogen( ) {
     generate_keys = 1;
 }
 
-void unset_autogen( ) {
+void crypto_unset_autogen( ) {
     generate_keys = 0;
 }
 
@@ -351,67 +351,67 @@ crypto_key_return_t crypto_wipe_keyfile(const char *filename, size_t passes) {
     size_t i = 0, j = 0;        /* loop counters */
 
     /* use stat to get file size */
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] stat'ing %s...\n", filename);
-    #endif 
+#endif 
     if (-1 == stat(filename, &kf_stat)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         perror("[!] stat");
-        #endif
+#endif
         return result;
     }
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] stat complete!\n");
-    #endif
+#endif
 
     /* compute number of rounds and the size of the random data buffer
      * that will be written to the file */
     file_size = (size_t) kf_stat.st_size;
-    #ifdef SECURE_MEM
-    rounds = (file_size / (SECURE_MEM / 2)) + 1;
-    wipe_buf_size = (SECURE_MEM / 2);
-    #else
+#ifdef SECURE_MEM
+    rounds = (file_size / (SECURE_MEM / 5)) + 1;
+    wipe_buf_size = (SECURE_MEM / 5);
+#else
     wipe_buf_size = file_size;
-    #endif
+#endif
 
     /* for debugging purposes, print out some wipe data */
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] wipe data:\n");
     printf("    wipe size: %u\n    passes: %u\n    rounds: %u\n", 
-           (unsigned int) wipe_buf_size, (unsigned int) passes,
-           (unsigned int) rounds);
-    #endif
+            (unsigned int) wipe_buf_size, (unsigned int) passes,
+            (unsigned int) rounds);
+#endif
 
     /* top-level loop to write to the file passes number of times */
     for (i = 0; i < passes; ++i) {
-        #ifdef DEBUG
+#ifdef DEBUG
         printf("[+] wipe pass number %u\n", (unsigned int) i);
-        #endif
+#endif
 
         kf = fopen(filename, "w");
 
         /* error checking */
         if (NULL == kf) {
-            #ifdef DEBUG
+#ifdef DEBUG
             fprintf(stderr, "[!] %s does not exist!\n", filename);
-            #endif
+#endif
 
             return result;
         } else if (0 != ferror(kf)) {
-            #ifdef DEBUG
+#ifdef DEBUG
             fprintf(stderr, "[!] encountered an error opening %s!\n", 
                     filename);
             perror("fopen");
-            #endif
+#endif
 
             return result;
         }
 
         /* inner loop to write the buffer to the file */
         for (j = 0; j < rounds; ++j) {
-            #ifdef DEBUG
+#ifdef DEBUG
             printf("\twipe round %u\n", (unsigned int) j);
-            #endif
+#endif
 
             size_t written = 0;
             rdata = CRYPTO_MALLOC( wipe_buf_size, sizeof rdata );
@@ -423,26 +423,26 @@ crypto_key_return_t crypto_wipe_keyfile(const char *filename, size_t passes) {
             /* sanity check to make sure we wrote as many bytes as we 
              * wanted to */
             if (written != wipe_buf_size) {
-                #ifdef DEBUG
+#ifdef DEBUG
                 fprintf(stderr, "[!] did not write expected number of ");
                 fprintf(stderr, "bytes (expected %u bytes, wrote %u bytes",
                         (unsigned int) wipe_buf_size, (unsigned int) written);
                 fprintf(stderr, "\nto file: %s\n", filename);
-                #endif
+#endif
                 result = INCONSISTENT_STATE;
 
                 return result;
             }
-            
+
             gcry_free(rdata);
         } /* end of wiping round */
 
         /* close and check for errors */
         if (0 != fclose(kf)) {
-            #ifdef DEBUG
+#ifdef DEBUG
             fprintf(stderr, "[!] error encountered closing %s!\n", filename);
             perror("fclose");
-            #endif
+#endif
 
             return result;
         }
@@ -451,9 +451,9 @@ crypto_key_return_t crypto_wipe_keyfile(const char *filename, size_t passes) {
 
     /* finally remove the file from the file system */
     if (0 != unlink(filename)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "error unlinking file!\n");
-        #endif
+#endif
     } else {
         result = KEY_SUCCESS;   /* making it this far means wiping 
                                  * was successful */

@@ -9,23 +9,21 @@
 #include "cryptoinit.h"
 #include <stdio.h>
 
-/* global variables */
-extern keystore_t keystore;
 
 /* crypto initialisation */
 keystore_t crypto_init( ) {
     size_t i = 0;           /* loop index */
     keystore = NULL;
 
-    #ifdef DBEUG
+#ifdef DBEUG
     printf("[+] initialising gcrypt...\n");
-    #endif
+#endif
 
     if (! gcry_check_version(GCRYPT_MIN_VERSION)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] version mismatch. the minimum version is %s\n", 
                 GCRYPT_MIN_VERSION);
-        #endif
+#endif
         return NULL;
     }
 
@@ -37,11 +35,11 @@ keystore_t crypto_init( ) {
     /************************
      * set up secure memory *
      ************************/
-    #ifdef SECURE_MEM
+#ifdef SECURE_MEM
 
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] setting up secure memory...\n");
-    #endif
+#endif
 
     /* place the random pool in secure memory */
     gcry_control(GCRYCTL_USE_SECURE_RNDPOOL);
@@ -52,43 +50,43 @@ keystore_t crypto_init( ) {
     /* resume secure memory warnings */
     gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
 
-    #endif
+#endif
 
     /* signal initialization complete  - library ready for use */
     gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] finished library initialisation...\n");
     printf("[+] setting up keystore...\n");
-    #endif
+#endif
 
     /* allocate memory to keystore */
     keystore    = (keystore_t) CRYPTO_MALLOC( 1, sizeof(struct keystore_s));
     keystore->store = (metakey_t *) CRYPTO_MALLOC( KEYSTORE_SIZE,
-                                                   sizeof(metakey_t));
+            sizeof(metakey_t));
     keystore->size  = 0;
 
     for (i = 0; i < KEYSTORE_SIZE; ++i) {
         size_t keysize = 32;
 
-        #ifdef DEBUG
+#ifdef DEBUG
         printf("allocating space for key #%u with size %u bytes...\n", 
-               i, keysize);
-        #endif
+                i, keysize);
+#endif
 
         keystore->store[i] = (metakey_t) CRYPTO_MALLOC(1, 
-                                         sizeof(struct metakey));
+                sizeof(struct metakey));
         keystore->store[i]->key = (unsigned char *) CRYPTO_MALLOC(
-                                    keysize, sizeof keystore->store[i]->key);
+                keysize, sizeof keystore->store[i]->key);
         keystore->store[i]->initialised = 1;
 
-        #ifdef SECURE_MEM
+#ifdef SECURE_MEM
         keystore->store[i]->sm = 1;
-        #else
+#else
         keystore->store[i]->sm = 0;
-        #endif
+#endif
     }
-    
+
     return keystore;
 }
 
@@ -97,36 +95,36 @@ crypto_return_t crypto_shutdown( ) {
     size_t i = 0;
 
     if (! gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
-        #ifdef DEBUG
+#ifdef DEBUG
         fprintf(stderr, "[!] crypto library not initialised!\n");
-        #endif
+#endif
 
         return EXIT_FAILURE;
     }
 
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("[+] shutting down crypto system...\n");
-    #endif
+#endif
 
     /* destroy keys */
     for (i = 0; i < KEYSTORE_SIZE; ++i) {
-        #ifdef DEBUG
+#ifdef DEBUG
         printf("[+] wiping key %d...\n", i);
-        #endif
+#endif
 
         if (! keystore->store[i]->initialised) {
-            #ifdef DEBUG
+#ifdef DEBUG
             printf("[+] key not initalised, skipping...\n");
-            #endif
+#endif
 
             continue;
         }
 
         /* if secure memory is used, fill key with random data */
-        #ifdef SECURE_MEM
+#ifdef SECURE_MEM
         gcry_create_nonce(keystore->store[i]->key, 
-                          keystore->store[i]->keysize);
-        #endif
+                keystore->store[i]->keysize);
+#endif
         gcry_free(keystore->store[i]);
         keystore->store[i] = NULL;
     }
@@ -136,10 +134,10 @@ crypto_return_t crypto_shutdown( ) {
     gcry_free( keystore );
 
     /* if secure memory is used, zeroise and shutdown secure memory */
-    #ifdef SECURE_MEM
+#ifdef SECURE_MEM
     gcry_control(GCRYCTL_TERM_SECMEM);
     gcry_control(GCRYCTL_TERM_SECMEM);
-    #endif
+#endif
 
     return EXIT_SUCCESS;
 }

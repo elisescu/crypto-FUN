@@ -95,8 +95,8 @@ crypto_key_return_t crypto_zerokeystore( void );
 /********************************/
 /* miscellaneous functions      */
 /********************************/
-void set_autogen( void );
-void unset_autogen( void );
+void crypto_set_autogen( void );
+void crypto_unset_autogen( void );
 int crypto_autogen_status( void );
 crypto_key_return_t crypto_wipe_keyfile( const char *, size_t );
 

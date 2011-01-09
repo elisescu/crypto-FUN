@@ -31,6 +31,10 @@ int main(int argc, char **argv ) {
     size_t keysize                  = 16;   /* AES128 */
     int loadkey                     = 0;
 
+    #ifdef AUTOKEYGEN
+    crypto_set_autogen( );
+    #endif
+
     /* check for load / dump operation */
     if (argc > 1) {
         if (argc >= 2) {
