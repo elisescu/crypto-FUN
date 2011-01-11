@@ -16,6 +16,7 @@
 #include "config.h"
 #include "crypto.h"
 #include "cryptofile.h"
+#include "debug.h"
 
 crypto_key_return_t crypto_wipe_file(const char *filename, size_t passes) {
     crypto_key_return_t result = KEY_FAILURE;
@@ -28,18 +29,15 @@ crypto_key_return_t crypto_wipe_file(const char *filename, size_t passes) {
     size_t i = 0, j = 0;        /* loop counters */
 
     /* use stat to get file size */
-#ifdef DEBUG
-    printf("[+] stat'ing %s...\n", filename);
-#endif 
+    TRACEOUT_1("[+] stat'ing %s...\n", filename);
     if (-1 == stat(filename, &kf_stat)) {
 #ifdef DEBUG
         perror("[!] stat");
 #endif
         return result;
     }
-#ifdef DEBUG
-    printf("[+] stat complete!\n");
-#endif
+
+    LOG("[+] stat complete!\n");
 
     /* compute number of rounds and the size of the random data buffer
      * that will be written to the file */
